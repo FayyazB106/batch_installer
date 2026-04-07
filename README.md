@@ -42,3 +42,4 @@ A portable Windows app installer you can carry on a USB drive. Pick the apps you
 | Adobe Creative Cloud | Creative Suite | Direct EXE    |
 | TeamViewer           | Remote Access  | Direct EXE    |
 | Dropbox              | Cloud Storage  | Direct EXE    |
+| Microsoft Outlook    | Email          | Direct EXE    |

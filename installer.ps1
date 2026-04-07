@@ -53,6 +53,15 @@ $Apps = @(
         File     = "dropbox_setup.exe"
         Type     = "exe"
         Selected = $false
+    },
+    [PSCustomObject]@{
+        Name     = "Microsoft Outlook"
+        Category = "Email"
+        URL      = "https://go.microsoft.com/fwlink/?linkid=2207851"
+        Args     = ""
+        File     = "outlook_setup.exe"
+        Type     = "exe"
+        Selected = $false
     }
 )
 
