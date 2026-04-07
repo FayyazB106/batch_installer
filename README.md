@@ -43,3 +43,4 @@ A portable Windows app installer you can carry on a USB drive. Pick the apps you
 | TeamViewer           | Remote Access  | Direct EXE    |
 | Dropbox              | Cloud Storage  | Direct EXE    |
 | Microsoft Outlook    | Email          | Direct EXE    |
+| Microsoft Office 365 | Productivity   | Direct EXE    |

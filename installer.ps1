@@ -62,6 +62,15 @@ $Apps = @(
         File     = "outlook_setup.exe"
         Type     = "exe"
         Selected = $false
+    },
+    [PSCustomObject]@{
+        Name     = "Microsoft Office 365"
+        Category = "Productivity"
+        URL      = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?productReleaseID=O365BusinessRetail&platform=Def&language=en-us"
+        Args     = ""
+        File     = "office365_setup.exe"
+        Type     = "exe"
+        Selected = $false
     }
 )
 
