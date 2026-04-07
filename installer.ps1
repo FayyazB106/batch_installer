@@ -370,18 +370,22 @@ function Install-Apps {
             $installTimer.Stop()
             $installSecs = [math]::Round($installTimer.Elapsed.TotalSeconds, 1)
 
-            if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
+            if ($proc.ExitCode -eq 0) {
                 Write-Host "         Done. ($installSecs`s)" -ForegroundColor Green
-                Write-Host "         $stepLabel $($app.Name) - OK (exit 0, took $installSecs`s)" -ForegroundColor DarkGray
+                Write-Host "         $stepLabel $($app.Name) - OK (took $installSecs`s)" -ForegroundColor DarkGray
                 $results += [PSCustomObject]@{ Name = $app.Name; Status = "OK"; Note = "" }
+            } elseif ($proc.ExitCode -eq 3010) {
+                Write-Host "         Installed, reboot required to finish. ($installSecs`s)" -ForegroundColor Green
+                Write-Host "         $stepLabel $($app.Name) - OK, reboot required (took $installSecs`s)" -ForegroundColor DarkGray
+                $results += [PSCustomObject]@{ Name = $app.Name; Status = "OK"; Note = "Reboot required" }
             } elseif ($proc.ExitCode -eq 1603) {
                 Write-Host "         Already installed. ($installSecs`s)" -ForegroundColor Yellow
-                Write-Host "         $stepLabel $($app.Name) - already installed (exit 1603, $installSecs`s)" -ForegroundColor Yellow
+                Write-Host "         $stepLabel $($app.Name) - already installed ($installSecs`s)" -ForegroundColor Yellow
                 $results += [PSCustomObject]@{ Name = $app.Name; Status = "WARN"; Note = "Already installed" }
             } else {
-                Write-Host "         Exit code $($proc.ExitCode). ($installSecs`s)" -ForegroundColor Yellow
-                Write-Host "         $stepLabel $($app.Name) - exit $($proc.ExitCode), $installSecs`s" -ForegroundColor Yellow
-                $results += [PSCustomObject]@{ Name = $app.Name; Status = "WARN"; Note = "Exit code $($proc.ExitCode)" }
+                Write-Host "         Installation may have failed (exit code $($proc.ExitCode)). ($installSecs`s)" -ForegroundColor Yellow
+                Write-Host "         $stepLabel $($app.Name) - possible failure, exit code $($proc.ExitCode) ($installSecs`s)" -ForegroundColor Yellow
+                $results += [PSCustomObject]@{ Name = $app.Name; Status = "WARN"; Note = "Possible failure (exit code $($proc.ExitCode))" }
             }
         } catch {
             Write-Host "         Failed: $_" -ForegroundColor Red
@@ -400,7 +404,10 @@ function Install-Apps {
 
     foreach ($r in $results) {
         switch ($r.Status) {
-            "OK"   { Write-Host "  [OK]   " -ForegroundColor Green  -NoNewline; Write-Host $r.Name }
+            "OK"   {
+                Write-Host "  [OK]   " -ForegroundColor Green -NoNewline
+                if ($r.Note) { Write-Host "$($r.Name)  ($($r.Note))" } else { Write-Host $r.Name }
+            }
             "WARN" { Write-Host "  [WARN] " -ForegroundColor Yellow -NoNewline; Write-Host "$($r.Name)  ($($r.Note))" }
             "FAIL" { Write-Host "  [FAIL] " -ForegroundColor Red    -NoNewline; Write-Host "$($r.Name)  ($($r.Note))" }
         }
@@ -412,8 +419,6 @@ function Install-Apps {
 
     Write-Host ""
     Write-Host "  $okCount succeeded  |  $warnCount warnings  |  $failCount failed" -ForegroundColor DarkGray
-    Write-Host ""
-    Write-Host "  Note: Exit code 3010 means a reboot is required to complete the install." -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "         Session complete. OK=$okCount WARN=$warnCount FAIL=$failCount" -ForegroundColor DarkGray
     Write-Host ""

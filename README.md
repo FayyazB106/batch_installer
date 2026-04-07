@@ -42,10 +42,3 @@ A portable Windows app installer you can carry on a USB drive. Pick the apps you
 | Adobe Creative Cloud | Creative Suite | Direct EXE    |
 | TeamViewer           | Remote Access  | Direct EXE    |
 | Dropbox              | Cloud Storage  | Direct EXE    |
-
----
-
-## Notes
-
-- Exit code **3010** means the install succeeded but a reboot is required to finish
-- Exit code **1603** typically means the app is already installed
