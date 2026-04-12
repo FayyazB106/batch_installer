@@ -50,7 +50,7 @@ A portable app installer you can carry on a USB drive. Pick the apps you want fr
 
 | Key         | Action              |
 |-------------|---------------------|
-| 1-7         | Toggle an app       |
+| 1-6         | Toggle an app       |
 | A           | Select all / none   |
 | Enter       | Start installing    |
 | Q           | Quit                |
@@ -68,7 +68,6 @@ A portable app installer you can carry on a USB drive. Pick the apps you want fr
 | Adobe Creative Cloud | Creative Suite | Direct EXE    |
 | TeamViewer           | Remote Access  | Direct EXE    |
 | Dropbox              | Cloud Storage  | Direct EXE    |
-| Microsoft Outlook    | Email          | Direct EXE    |
 | Microsoft Office 365 | Productivity   | Direct EXE    |
 
 ### macOS
@@ -80,19 +79,14 @@ A portable app installer you can carry on a USB drive. Pick the apps you want fr
 | Adobe Creative Cloud | Creative Suite | DMG           |
 | TeamViewer           | Remote Access  | DMG           |
 | Dropbox              | Cloud Storage  | DMG           |
-| Microsoft Outlook    | Email          | PKG*          |
 | Microsoft Office 365 | Productivity   | PKG*          |
 
-\* Requires macOS 14 (Sonoma) or later. The installer will skip these with a message on older versions.
+\* Requires macOS 14 (Sonoma) or later. The installer will skip this with a message on older versions.
 
 ---
 
 ## Notes
 
-### Windows
-- If an app installs successfully but requires a reboot, the UI will show **"Installed, reboot required to finish"** and mark it as `[OK]` with a note
-- If an app is already installed, the UI will show **"Already installed"** and mark it as `[WARN]`
-
-### macOS
-- Downloads that fail mid-way will automatically retry up to 3 times
-- Apps that require a newer macOS version will be skipped before downloading
+- If an app installs successfully but requires a reboot (Windows), the UI will show **"Installed, reboot required to finish"**
+- On macOS, downloads that fail mid-way will automatically retry up to 3 times
+- On macOS, apps that require a newer macOS version will be skipped before downloading

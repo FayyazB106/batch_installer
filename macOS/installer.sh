@@ -21,7 +21,6 @@ APP_NAMES=(
     "Adobe Creative Cloud"
     "TeamViewer"
     "Dropbox"
-    "Microsoft Outlook"
     "Microsoft Office 365"
 )
 APP_CATEGORIES=(
@@ -30,7 +29,6 @@ APP_CATEGORIES=(
     "Creative Suite"
     "Remote Access"
     "Cloud Storage"
-    "Email"
     "Productivity"
 )
 APP_URLS=(
@@ -39,7 +37,6 @@ APP_URLS=(
     "https://prod-rel-ffc-ccm.oobesaas.adobe.com/adobe-ffc-external/core/v1/wam/download?sapCode=KCCC&startPoint=mam&platform=osx10-64"
     "https://download.teamviewer.com/download/TeamViewer.dmg"
     "https://www.dropbox.com/download?plat=mac&full=1"
-    "https://go.microsoft.com/fwlink/?linkid=525137"
     "https://go.microsoft.com/fwlink/?linkid=2009112"
 )
 APP_FILES=(
@@ -48,7 +45,6 @@ APP_FILES=(
     "adobe_cc.dmg"
     "teamviewer.dmg"
     "dropbox.dmg"
-    "outlook.pkg"
     "office365.pkg"
 )
 APP_TYPES=(
@@ -58,7 +54,6 @@ APP_TYPES=(
     "dmg"
     "dmg"
     "pkg"
-    "pkg"
 )
 APP_MIN_MACOS=(
     ""      # Chrome
@@ -66,10 +61,9 @@ APP_MIN_MACOS=(
     ""      # Adobe CC
     ""      # TeamViewer
     ""      # Dropbox
-    "14"    # Outlook
     "14"    # Office 365
 )
-APP_SELECTED=( 0 0 0 0 0 0 0 )
+APP_SELECTED=( 0 0 0 0 0 0 )
 APP_COUNT=${#APP_NAMES[@]}
 
 # ── Temp directory with cleanup ─────────────────────────────────────────

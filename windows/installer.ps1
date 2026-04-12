@@ -55,15 +55,6 @@ $Apps = @(
         Selected = $false
     },
     [PSCustomObject]@{
-        Name     = "Microsoft Outlook"
-        Category = "Email"
-        URL      = "https://go.microsoft.com/fwlink/?linkid=2207851"
-        Args     = ""
-        File     = "outlook_setup.exe"
-        Type     = "exe"
-        Selected = $false
-    },
-    [PSCustomObject]@{
         Name     = "Microsoft Office 365"
         Category = "Productivity"
         URL      = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?productReleaseID=O365BusinessRetail&platform=Def&language=en-us"
