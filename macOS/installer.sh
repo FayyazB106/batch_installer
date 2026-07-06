@@ -22,6 +22,7 @@ APP_NAMES=(
     "TeamViewer"
     "Dropbox"
     "Microsoft Office 365"
+    "Adobe Acrobat Reader"
 )
 APP_CATEGORIES=(
     "Browser"
@@ -30,6 +31,7 @@ APP_CATEGORIES=(
     "Remote Access"
     "Cloud Storage"
     "Productivity"
+    "PDF"
 )
 APP_URLS=(
     "https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg"
@@ -38,6 +40,7 @@ APP_URLS=(
     "https://download.teamviewer.com/download/TeamViewer.dmg"
     "https://www.dropbox.com/download?plat=mac&full=1"
     "https://go.microsoft.com/fwlink/?linkid=2009112"
+    "https://ardownload3.adobe.com/pub/adobe/acrobat/mac/AcrobatDC/2600121662/AdobeReader2600121662.dmg"
 )
 APP_FILES=(
     "googlechrome.dmg"
@@ -46,6 +49,7 @@ APP_FILES=(
     "teamviewer.dmg"
     "dropbox.dmg"
     "office365.pkg"
+    "acrobat_reader.dmg"
 )
 APP_TYPES=(
     "dmg"
@@ -54,6 +58,7 @@ APP_TYPES=(
     "dmg"
     "dmg"
     "pkg"
+    "dmg"
 )
 APP_MIN_MACOS=(
     ""      # Chrome
@@ -62,8 +67,9 @@ APP_MIN_MACOS=(
     ""      # TeamViewer
     ""      # Dropbox
     "14"    # Office 365
+    ""      # Acrobat Reader
 )
-APP_SELECTED=( 0 0 0 0 0 0 )
+APP_SELECTED=( 0 0 0 0 0 0 0 )
 APP_COUNT=${#APP_NAMES[@]}
 
 # ── Temp directory with cleanup ─────────────────────────────────────────
@@ -287,8 +293,12 @@ install_dmg() {
         pkg_path=$(find "$mount_point" -maxdepth 2 -name "*.pkg" -print -quit 2>/dev/null)
         if [[ -n "$pkg_path" ]]; then
             printf "${DKGRAY}         Found .pkg inside DMG, installing...${RST}\n"
-            sudo installer -pkg "$pkg_path" -target /
+            install_pkg "$pkg_path"
             local exit_code=$?
+            # Remove quarantine from any app installed by this pkg
+            for app in /Applications/Adobe*.app /Applications/Acrobat*.app; do
+                [[ -e "$app" ]] && sudo xattr -rd com.apple.quarantine "$app" 2>/dev/null
+            done
             hdiutil detach "$mount_point" -quiet 2>/dev/null
             return $exit_code
         fi
@@ -319,19 +329,24 @@ install_pkg() {
     sudo installer -pkg "$filepath" -target / > "$logfile" 2>&1 &
     local pid=$!
 
-    # Spinner while waiting
+    # Spinner while waiting, with 90s timeout for installers that linger
     local spin='|/-\'
     local i=0
     local spin_start=$SECONDS
     while kill -0 "$pid" 2>/dev/null; do
         local elapsed=$(( SECONDS - spin_start ))
         printf "\r${DKGRAY}         Installing... %s (%ds)${RST}  " "${spin:i++%4:1}" "$elapsed"
+        if [[ $elapsed -ge 90 ]]; then
+            sudo kill "$pid" 2>/dev/null
+            break
+        fi
         sleep 0.3
     done
     printf "\r"
 
-    wait "$pid"
+    wait "$pid" 2>/dev/null
     local exit_code=$?
+    [[ $exit_code -eq 143 || $exit_code -eq 137 ]] && exit_code=0
 
     # Show output and capture error
     cat "$logfile"

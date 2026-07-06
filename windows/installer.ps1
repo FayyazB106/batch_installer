@@ -62,6 +62,15 @@ $Apps = @(
         File     = "office365_setup.exe"
         Type     = "exe"
         Selected = $false
+    },
+    [PSCustomObject]@{
+        Name     = "Adobe Acrobat Reader"
+        Category = "PDF"
+        URL      = "https://admdownload.adobe.com/rdcm/installers/live/readerdc64.exe"
+        Args     = "/silent /install"
+        File     = "acrobat_reader_setup.exe"
+        Type     = "adobe"
+        Selected = $false
     }
 )
 
@@ -345,7 +354,30 @@ function Install-Apps {
         $installTimer = [System.Diagnostics.Stopwatch]::StartNew()
 
         try {
-            if ($app.Type -eq "winget") {
+            if ($app.Type -eq "adobe") {
+                # Bootstrapper downloads + installs the real app as a child process.
+                # Launch it detached, then poll until Adobe Reader appears on disk.
+                Start-Process -FilePath $filePath -ArgumentList $app.Args
+                $adobePaths = @(
+                    "$env:ProgramFiles\Adobe\Acrobat DC\Acrobat\Acrobat.exe",
+                    "${env:ProgramFiles(x86)}\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
+                )
+                $spin = '|/-\'
+                $si = 0
+                $timeout = [System.Diagnostics.Stopwatch]::StartNew()
+                $found = $false
+                while ($timeout.Elapsed.TotalSeconds -lt 300) {
+                    foreach ($p in $adobePaths) {
+                        if (Test-Path $p) { $found = $true; break }
+                    }
+                    if ($found) { break }
+                    $elapsed = [math]::Round($timeout.Elapsed.TotalSeconds)
+                    Write-Host -NoNewline "`r         Installing... $($spin[$si++ % 4]) ($($elapsed)s)   " -ForegroundColor DarkGray
+                    Start-Sleep -Milliseconds 500
+                }
+                Write-Host "`r" -NoNewline
+                $proc = [PSCustomObject]@{ ExitCode = if ($found) { 0 } else { 1 } }
+            } elseif ($app.Type -eq "winget") {
                 $winget = Get-WingetPath
                 if ($winget) {
                     Write-Host "         Resetting winget sources..." -ForegroundColor DarkGray
