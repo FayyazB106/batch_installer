@@ -325,22 +325,32 @@ install_pkg() {
     local filepath="$1"
     local logfile="$TEMP_DIR/installer_log.txt"
 
+    # Snapshot app list before installing
+    local before_apps
+    before_apps=$(ls /Applications/ 2>/dev/null | sort)
+
     # Run installer in background, write output to log
     sudo installer -pkg "$filepath" -target / > "$logfile" 2>&1 &
     local pid=$!
 
-    # Spinner while waiting, with 90s timeout for installers that linger
+    # Spinner — stop when a new entry appears in /Applications, or installer exits, or 600s timeout
     local spin='|/-\'
     local i=0
     local spin_start=$SECONDS
     while kill -0 "$pid" 2>/dev/null; do
         local elapsed=$(( SECONDS - spin_start ))
         printf "\r${DKGRAY}         Installing... %s (%ds)${RST}  " "${spin:i++%4:1}" "$elapsed"
-        if [[ $elapsed -ge 90 ]]; then
+        local after_apps
+        after_apps=$(ls /Applications/ 2>/dev/null | sort)
+        if [[ "$after_apps" != "$before_apps" ]]; then
             sudo kill "$pid" 2>/dev/null
             break
         fi
-        sleep 0.3
+        if [[ $elapsed -ge 600 ]]; then
+            sudo kill "$pid" 2>/dev/null
+            break
+        fi
+        sleep 1
     done
     printf "\r"
 
