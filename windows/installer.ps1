@@ -71,6 +71,24 @@ $Apps = @(
         File     = "acrobat_reader_setup.exe"
         Type     = "adobe"
         Selected = $false
+    },
+    [PSCustomObject]@{
+        Name     = "Blender"
+        Category = "3D Modeling"
+        URL      = "https://download.blender.org/release/Blender5.2/blender-5.2.0-windows-x64.msi"
+        Args     = "/quiet /norestart"
+        File     = "blender_setup.msi"
+        Type     = "msi"
+        Selected = $false
+    },
+    [PSCustomObject]@{
+        Name     = "WinRAR"
+        Category = "Utilities"
+        URL      = "https://www.rarlab.com/rar/winrar-x64-701.exe"
+        Args     = "/S"
+        File     = "winrar_setup.exe"
+        Type     = "exe"
+        Selected = $false
     }
 )
 

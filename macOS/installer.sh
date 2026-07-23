@@ -23,6 +23,7 @@ APP_NAMES=(
     "Dropbox"
     "Microsoft Office 365"
     "Adobe Acrobat Reader"
+    "The Unarchiver"
 )
 APP_CATEGORIES=(
     "Browser"
@@ -32,6 +33,7 @@ APP_CATEGORIES=(
     "Cloud Storage"
     "Productivity"
     "PDF"
+    "Utilities"
 )
 APP_URLS=(
     "https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg"
@@ -41,6 +43,7 @@ APP_URLS=(
     "https://www.dropbox.com/download?plat=mac&full=1"
     "https://go.microsoft.com/fwlink/?linkid=2009112"
     "https://ardownload3.adobe.com/pub/adobe/acrobat/mac/AcrobatDC/2600121662/AdobeReader2600121662.dmg"
+    "https://dl.devmate.com/com.macpaw.site.theunarchiver/TheUnarchiver.dmg"
 )
 APP_FILES=(
     "googlechrome.dmg"
@@ -50,6 +53,7 @@ APP_FILES=(
     "dropbox.dmg"
     "office365.pkg"
     "acrobat_reader.dmg"
+    "theunarchiver.dmg"
 )
 APP_TYPES=(
     "dmg"
@@ -58,6 +62,8 @@ APP_TYPES=(
     "dmg"
     "dmg"
     "pkg"
+    "dmg"
+    "dmg"
     "dmg"
 )
 APP_MIN_MACOS=(
@@ -68,8 +74,9 @@ APP_MIN_MACOS=(
     ""      # Dropbox
     "14"    # Office 365
     ""      # Acrobat Reader
+    ""      # The Unarchiver
 )
-APP_SELECTED=( 0 0 0 0 0 0 0 )
+APP_SELECTED=( 0 0 0 0 0 0 0 0 )
 APP_COUNT=${#APP_NAMES[@]}
 
 # ── Temp directory with cleanup ─────────────────────────────────────────
