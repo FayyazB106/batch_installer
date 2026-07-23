@@ -1,0 +1,80 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build DMG
+        run: |
+          mkdir staging
+          cp macOS/installer.sh staging/
+          cp macOS/run.command staging/
+          chmod +x staging/run.command staging/installer.sh
+          hdiutil create \
+            -volname "Batch Installer" \
+            -srcfolder staging \
+            -ov \
+            -format UDZO \
+            "Batch-Installer-macOS.dmg"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: Batch-Installer-macOS.dmg
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install NSIS
+        run: choco install nsis --yes
+
+      - name: Create NSIS script
+        shell: powershell
+        run: |
+          $nsi = @'
+          Unicode true
+          Name "Batch Installer"
+          OutFile "Batch-Installer-Windows.exe"
+          RequestExecutionLevel admin
+          SilentInstall silent
+
+          Section
+            SetOutPath "$PLUGINSDIR"
+            File "windows\installer.ps1"
+            ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\installer.ps1"'
+          SectionEnd
+          '@
+          $nsi | Out-File -FilePath installer.nsi -Encoding UTF8
+
+      - name: Build EXE
+        run: '& "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: Batch-Installer-Windows.exe
+
+  create-release:
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: "Batch Installer ${{ github.ref_name }}"
+          files: |
+            macos-dmg/Batch-Installer-macOS.dmg
+            windows-exe/Batch-Installer-Windows.exe
