@@ -13,10 +13,48 @@ jobs:
 
       - name: Build DMG
         run: |
-          mkdir staging
-          cp macOS/installer.sh staging/
-          cp macOS/run.command staging/
-          chmod +x staging/run.command staging/installer.sh
+          # Create .app bundle structure
+          APP="staging/Batch Installer.app"
+          mkdir -p "$APP/Contents/MacOS"
+          mkdir -p "$APP/Contents/Resources"
+
+          # Copy installer script into Resources
+          cp macOS/installer.sh "$APP/Contents/Resources/installer.sh"
+          chmod +x "$APP/Contents/Resources/installer.sh"
+
+          # Launcher: opens Terminal and runs the installer
+          cat > "$APP/Contents/MacOS/Batch Installer" <<'EOF'
+          #!/bin/bash
+          RESOURCES="$(cd "$(dirname "$0")/../Resources" && pwd)"
+          osascript <<APPLESCRIPT
+          tell application "Terminal"
+              activate
+              do script "bash '$RESOURCES/installer.sh'; exit"
+          end tell
+          APPLESCRIPT
+          EOF
+          chmod +x "$APP/Contents/MacOS/Batch Installer"
+
+          # Info.plist
+          cat > "$APP/Contents/Info.plist" <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>Batch Installer</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.batchinstaller.app</string>
+              <key>CFBundleName</key>
+              <string>Batch Installer</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+          </dict>
+          </plist>
+          EOF
+
           hdiutil create \
             -volname "Batch Installer" \
             -srcfolder staging \
